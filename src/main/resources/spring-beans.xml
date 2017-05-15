@@ -1,0 +1,167 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/aop 
+   http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:Application.properties" />
+	</bean>
+
+	<bean id="oracleSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="oraclesDataSource" />
+		<property name="mappingResources">
+			<list>
+				<value>persons.hbm.xml </value>
+			</list>
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop>
+				<prop key="hibernate.autocommit">false</prop>
+				<!-- <prop key="hibernate.connection.isolation">3</prop> -->
+				<prop key="hibernate.current_session_context_class">jta</prop>
+				<prop key="hibernate.transaction.factory_class">org.hibernate.engine.transaction.internal.jdbc.JdbcTransactionFactory
+				</prop>
+				<prop key="hibernate.transaction.manager_lookup_class">com.atomikos.icatch.jta.hibernate4.TransactionManagerLookup
+				</prop>
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<prop key="hibernate.c3p0.min_size">5</prop>
+				<prop key="hibernate.c3p0.max_size">10</prop>
+				<prop key="hibernate.c3p0.timeout">300</prop>
+			</props>
+		</property>
+
+	</bean>
+
+	<bean id="mysqlSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="mysqlDataSource" />
+		<property name="mappingResources">
+			<list>
+				<value>persons.hbm.xml </value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.autocommit">false</prop>
+				<!-- <prop key="hibernate.connection.isolation">3</prop> -->
+				<prop key="hibernate.current_session_context_class">jta</prop>
+				<prop key="hibernate.transaction.factory_class">org.hibernate.engine.transaction.internal.jdbc.JdbcTransactionFactory
+				</prop>
+				<prop key="hibernate.transaction.manager_lookup_class">com.atomikos.icatch.jta.hibernate4.TransactionManagerLookup
+				</prop>
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<prop key="hibernate.c3p0.min_size">5</prop>
+				<prop key="hibernate.c3p0.max_size">10</prop>
+				<prop key="hibernate.c3p0.timeout">300</prop>
+			</props>
+		</property>
+
+	</bean>
+
+	<!-- <aop:config>
+	<aop:advisor id="managerTx" advice-ref="txAdvice"
+		pointcut="execution(* 
+		*..service.manager.*Manager.*(..))" order="1" />
+</aop:config>
+	<tx:advice id="txAdvice">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" read-only="false" />
+			<tx:method name="create*" propagation="REQUIRED" read-only="false" />
+			<tx:method name="save*" propagation="REQUIRED" read-only="false" />
+			<tx:method name="update*" propagation="REQUIRED" read-only="false" />
+			<tx:method name="delete*" propagation="REQUIRED" read-only="false" />
+		</tx:attributes>
+	</tx:advice> -->
+
+	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+		init-method="init" destroy-method="close">
+		<property name="forceShutdown" value="false" />
+	</bean>
+	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.J2eeUserTransaction">
+		<property name="transactionTimeout" value="300" />
+	</bean>
+
+
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager"
+		depends-on="atomikosTransactionManager,atomikosUserTransaction">
+		<property name="transactionManager" ref="atomikosTransactionManager" />
+		<property name="userTransaction" ref="atomikosUserTransaction" />
+		<property name="allowCustomIsolationLevels" value="true" />
+	</bean>
+
+	<bean id="mysqlDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		init-method="init" destroy-method="close">
+		<property name="uniqueResourceName">
+			<value>mySqlDataSource</value>
+		</property>
+		<property name="xaDataSourceClassName">
+			<value>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</value>
+		</property>
+		<property name="xaProperties">
+			<props>
+				<prop key="databaseName">sys</prop>
+				<prop key="serverName">localhost</prop>
+				<prop key="port">3306</prop>
+				<prop key="user">root</prop>
+				<prop key="password">magesh123</prop>
+				<prop key="url">jdbc:mysql://localhost:3306/sys</prop>
+			</props>
+		</property>
+		<property name="minPoolSize">
+			<value>1</value>
+		</property>
+	</bean>
+
+
+	<bean id="oraclesDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		init-method="init" destroy-method="close">
+		<property name="uniqueResourceName">
+			<value>OracleDataSource</value>
+		</property>
+		<property name="xaDataSourceClassName">
+			<value>oracle.jdbc.xa.client.OracleXADataSource</value>
+		</property>
+		<property name="xaProperties">
+			<props>
+				<prop key="databaseName">XE</prop>
+				<prop key="serverName">localhost</prop>
+				<!-- <prop key="port">1521</prop> -->
+				<prop key="user">system</prop>
+				<prop key="password">magesh123</prop>
+				<prop key="URL">jdbc:oracle:thin:@localhost:1521:XE</prop>
+			</props>
+		</property>
+		<property name="minPoolSize">
+			<value>1</value>
+		</property>
+	</bean>
+
+
+
+	<bean id="persons" class="com.bnym.aal.poc.spring_jta.Persons">
+	</bean>
+
+	<bean id="App" class="com.bnym.aal.poc.spring_jta.App">
+		<property name="springJtaDaoClass" ref="springJtaDaoClass" />
+	</bean>
+
+	<bean id="springJtaDaoClass" class="com.bnym.aal.poc.spring_jta.springJtaDaoClass">
+		<property name="oracleSessionFactory" ref="oracleSessionFactory" />
+		<property name="mysqlSessionFactory" ref="mysqlSessionFactory" />
+		<property name="atomikosTransactionManager" ref="transactionManager" />
+		<property name="persons" ref="persons" />
+
+	</bean>
+</beans>

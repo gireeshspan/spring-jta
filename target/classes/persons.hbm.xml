@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name="com.bnym.aal.poc.spring_jta.Persons" table="Persons">
+     
+      <id name="in" type="int" column="PersonID">
+      </id>
+      <property name="lastName" column="LastName" type="string"/>
+      <property name="firstName" column="FirstName" type="string"/>
+      <property name="address" column="Address" type="string"/>
+      <property name="city" column="City" type="string"/>
+   </class>
+</hibernate-mapping>
