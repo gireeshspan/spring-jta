@@ -25,14 +25,15 @@ http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop>
-				<prop key="hibernate.autocommit">false</prop>
-				<!-- <prop key="hibernate.connection.isolation">3</prop> -->
+				<!-- <prop key="hibernate.autocommit">true</prop> <prop key="hibernate.connection.isolation">3</prop> -->
 				<prop key="hibernate.current_session_context_class">jta</prop>
-				<prop key="hibernate.transaction.factory_class">org.hibernate.engine.transaction.internal.jdbc.JdbcTransactionFactory
+				<prop key="hibernate.transaction.factory_class">
+					org.hibernate.transaction.CMTTransactionFactory
 				</prop>
-				<prop key="hibernate.transaction.manager_lookup_class">com.atomikos.icatch.jta.hibernate4.TransactionManagerLookup
+				<prop key="hibernate.transaction.manager_lookup_class">
+					com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup
 				</prop>
-				<prop key="hibernate.current_session_context_class">thread</prop>
+				<!-- <prop key="hibernate.current_session_context_class">thread</prop> -->
 				<prop key="hibernate.c3p0.min_size">5</prop>
 				<prop key="hibernate.c3p0.max_size">10</prop>
 				<prop key="hibernate.c3p0.timeout">300</prop>
@@ -52,14 +53,16 @@ http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.autocommit">false</prop>
-				<!-- <prop key="hibernate.connection.isolation">3</prop> -->
+				<!-- <prop key="hibernate.autocommit">ture</prop> <prop key="hibernate.connection.isolation">3</prop> -->
 				<prop key="hibernate.current_session_context_class">jta</prop>
-				<prop key="hibernate.transaction.factory_class">org.hibernate.engine.transaction.internal.jdbc.JdbcTransactionFactory
+				<prop key="hibernate.transaction.factory_class">
+					org.hibernate.transaction.CMTTransactionFactory
 				</prop>
-				<prop key="hibernate.transaction.manager_lookup_class">com.atomikos.icatch.jta.hibernate4.TransactionManagerLookup
+				<prop key="hibernate.transaction.manager_lookup_class">
+					com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup
 				</prop>
-				<prop key="hibernate.current_session_context_class">thread</prop>
+
+				<!-- <prop key="hibernate.current_session_context_class">thread</prop> -->
 				<prop key="hibernate.c3p0.min_size">5</prop>
 				<prop key="hibernate.c3p0.max_size">10</prop>
 				<prop key="hibernate.c3p0.timeout">300</prop>
@@ -68,27 +71,24 @@ http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
 	</bean>
 
-	<!-- <aop:config>
-	<aop:advisor id="managerTx" advice-ref="txAdvice"
-		pointcut="execution(* 
-		*..service.manager.*Manager.*(..))" order="1" />
-</aop:config>
-	<tx:advice id="txAdvice">
-		<tx:attributes>
-			<tx:method name="*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="create*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="save*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="update*" propagation="REQUIRED" read-only="false" />
-			<tx:method name="delete*" propagation="REQUIRED" read-only="false" />
-		</tx:attributes>
-	</tx:advice> -->
+
+
+	<tx:annotation-driven proxy-target-class="true" />
+
+	<tx:jta-transaction-manager
+		transaction-manager="atomikosTransactionManager" />
+
+	<tx:annotation-driven transaction-manager="atomikosTransactionManager"
+		proxy-target-class="true" />
 
 	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
 		init-method="init" destroy-method="close">
 		<property name="forceShutdown" value="false" />
+
 	</bean>
 	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.J2eeUserTransaction">
 		<property name="transactionTimeout" value="300" />
+
 	</bean>
 
 
@@ -99,6 +99,7 @@ http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 		<property name="transactionManager" ref="atomikosTransactionManager" />
 		<property name="userTransaction" ref="atomikosUserTransaction" />
 		<property name="allowCustomIsolationLevels" value="true" />
+
 	</bean>
 
 	<bean id="mysqlDataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean"

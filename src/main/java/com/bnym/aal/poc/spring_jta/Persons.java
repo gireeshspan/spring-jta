@@ -8,7 +8,6 @@ public class Persons implements Serializable {
 		 */
 	private static final long serialVersionUID = 1L;
 
-
 	private static final Persons Persons = null;
 	private static Integer in;
 	private static String lastName;
@@ -16,9 +15,8 @@ public class Persons implements Serializable {
 	private static String address;
 	private static String city;
 
-	public Persons persons(Integer in,String lastName,String firstName,String address,String city)
-	{
-		Persons persons=new Persons();
+	public Persons persons(Integer in, String lastName, String firstName, String address, String city) {
+		Persons persons = new Persons();
 		persons.setIn(in);
 		persons.setLastName(lastName);
 		persons.setFirstName(firstName);
@@ -26,6 +24,7 @@ public class Persons implements Serializable {
 		persons.setCity(city);
 		return persons;
 	}
+
 	public static Integer getIn() {
 		return in;
 	}
