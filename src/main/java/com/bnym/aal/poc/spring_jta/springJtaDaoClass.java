@@ -67,15 +67,14 @@ public class springJtaDaoClass implements Serializable {
 	}
 
 	@Transactional()
-	public void daoWrapper() throws Exception {
+	public void daoWrapper(Persons p1,Persons p2) throws Exception {
 		atomikosTransactionManager = getAtomikosTransactionManager();
 		TransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = atomikosTransactionManager.getTransaction(def);
-		Persons person1 = new Persons();
-		person1.persons(2, "a", "b", "c", "d");
 		try {
-			getMysqlSessionFactory().getCurrentSession().save(person1);
-			getOracleSessionFactory().getCurrentSession().save(person1);
+			getOracleSessionFactory().getCurrentSession().save(p1);
+			getMysqlSessionFactory().getCurrentSession().save(p1);
+			
 			atomikosTransactionManager.commit(status);
 		} catch (Exception e) {
 			System.out.println("Error in creating record, rolling back");
@@ -84,37 +83,4 @@ public class springJtaDaoClass implements Serializable {
 		}
 
 	}
-
-	/*
-	 * @Transactional public void dbOracleAccess() {
-	 * 
-	 * TransactionDefinition def = new DefaultTransactionDefinition();
-	 * TransactionStatus status =
-	 * atomikosTransactionManager.getTransaction(def);
-	 * oracleSession=getOracleSessionFactory().getCurrentSession();
-	 * tx=oracleSession.beginTransaction(); try { Persons
-	 * person1=getPersons().persons(1,"a","b","c","d");
-	 * oracleSession.save(person1); oracleSession.flush();
-	 * oracleSession.close(); atomikosTransactionManager.commit(status); } catch
-	 * (Exception e) { System.out.println(
-	 * "Error in creating record, rolling back");
-	 * atomikosTransactionManager.rollback(status); }
-	 * 
-	 * }
-	 * 
-	 * @Transactional public void dbMySqlAccess() throws Exception {
-	 * TransactionDefinition def = new DefaultTransactionDefinition();
-	 * TransactionStatus status =
-	 * atomikosTransactionManager.getTransaction(def);
-	 * 
-	 * mysqlSession=getMysqlSessionFactory().getCurrentSession();
-	 * tx=mysqlSession.beginTransaction(); try { Persons
-	 * person2=getPersons().persons(2,"e","b","c","d");
-	 * mysqlSession.save(person2); mysqlSession.flush(); mysqlSession.close();
-	 * atomikosTransactionManager.commit(status); } catch (Exception e) {
-	 * System.out.println("Error in creating record, rolling back");
-	 * atomikosTransactionManager.rollback(status);
-	 * 
-	 * }
-	 */
 }

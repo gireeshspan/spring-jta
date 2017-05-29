@@ -6,17 +6,17 @@ public class Persons implements Serializable {
 	/**
 		 * 
 		 */
-	private static final long serialVersionUID = 1L;
+	private  final long serialVersionUID = 1L;
 
-	private static final Persons Persons = null;
-	private static Integer in;
-	private static String lastName;
-	private static String firstName;
-	private static String address;
-	private static String city;
+	
+	private  Integer in;
+	private  String lastName;
+	private  String firstName;
+	private  String address;
+	private  String city;
 
 	public Persons persons(Integer in, String lastName, String firstName, String address, String city) {
-		Persons persons = new Persons();
+		Persons persons=new Persons();
 		persons.setIn(in);
 		persons.setLastName(lastName);
 		persons.setFirstName(firstName);
@@ -25,44 +25,44 @@ public class Persons implements Serializable {
 		return persons;
 	}
 
-	public static Integer getIn() {
+	public  Integer getIn() {
 		return in;
 	}
 
 	public void setIn(Integer in) {
-		Persons.in = in;
+		this.in = in;
 	}
 
-	public static String getLastName() {
+	public  String getLastName() {
 		return lastName;
 	}
 
 	public void setLastName(String lastName) {
-		Persons.lastName = lastName;
+		this.lastName = lastName;
 	}
 
-	public static String getFirstName() {
+	public  String getFirstName() {
 		return firstName;
 	}
 
 	public void setFirstName(String firstName) {
-		Persons.firstName = firstName;
+		this.firstName = firstName;
 	}
 
-	public static String getAddress() {
+	public  String getAddress() {
 		return address;
 	}
 
 	public void setAddress(String address) {
-		Persons.address = address;
+		this.address = address;
 	}
 
-	public static String getCity() {
+	public  String getCity() {
 		return city;
 	}
 
 	public void setCity(String city) {
-		Persons.city = city;
+		this.city = city;
 	}
 
 	@Override
